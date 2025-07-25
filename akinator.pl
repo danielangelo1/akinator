@@ -1,34 +1,10 @@
 % =====================================
 % JOGO DE IDENTIFICAÇÃO DE PERSONAGENS
 % =====================================
+% AUTOR: Daniel Angelo Rosa Morais 21.1.8128
 
-AUTOR: Daniel Angelo Rosa Morais 21.1.8128
-
-% Base de dados de personagens
-% Formato: personagem(Nome, TipoRealidade, LocalOrigem, [ListaAtributos])
-
-personagem('Harry Potter', ficcional, 'Inglaterra', [mago, jovem, cicatriz, oculos, corajoso, estudante, masculino]).
-personagem('Sherlock Holmes', ficcional, 'Inglaterra', [detetive, inteligente, observador, fumante, adulto, masculino]).
-personagem('Albert Einstein', real, 'Alemanha', [cientista, genio, fisico, bigode, adulto, masculino]).
-personagem('Wonder Woman', ficcional, 'Themyscira', [super_heroi, mulher, forte, imortal, guerreira, laco_da_verdade]).
-personagem('Leonardo da Vinci', real, 'Italia', [artista, inventor, genio, renascentista, adulto, masculino]).
-personagem('Hermione Granger', ficcional, 'Inglaterra', [bruxa, inteligente, estudante, leal, jovem, feminino]).
-personagem('Napoleon Bonaparte', real, 'Franca', [imperador, militar, baixo, ambicioso, historico, masculino]).
-personagem('Batman', ficcional, 'Gotham City', [super_heroi, rico, vigilante, sem_poderes, adulto, masculino]).
-personagem('Marie Curie', real, 'Polonia', [cientista, fisica, quimica, nobel, determinada, feminino]).
-personagem('Gandalf', ficcional, 'Terra Media', [mago, sabio, barba_branca, cajado, imortal, masculino]).
-personagem('Cleopatra', real, 'Egito', [rainha, poderosa, bela, inteligente, historica, feminino]).
-personagem('Spider-Man', ficcional, 'Nova York', [super_heroi, jovem, poderes_aranha, fotografo, masculino, responsavel]).
-personagem('Isaac Newton', real, 'Inglaterra', [cientista, fisico, matematico, gravidade, genio, masculino]).
-personagem('Katniss Everdeen', ficcional, 'Panem', [arqueira, corajosa, revolucionaria, jovem, feminino, sobrevivente]).
-personagem('William Shakespeare', real, 'Inglaterra', [escritor, dramaturgo, poeta, genio_literario, adulto, masculino]).
-personagem('Elsa', ficcional, 'Arendelle', [rainha, poderes_gelo, irmã, jovem, feminino, magica]).
-personagem('Mahatma Gandhi', real, 'India', [lider, pacifico, independencia, magro, careca, masculino]).
-personagem('Darth Vader', ficcional, 'Galaxia Star Wars', [sith, pai, respirador, espada_laser, vilao, masculino]).
-personagem('Frida Kahlo', real, 'Mexico', [artista, pintora, autoretrato, sobrancelhas, ferida, feminino]).
-personagem('Yoda', ficcional, 'Galaxia Star Wars', [jedi, mestre, pequeno, verde, sabio, masculino]).
-personagem('Joana d Arc', real, 'Franca', [guerreira, santa, visionaria, jovem, corajosa, feminino]).
-personagem('Iron Man', ficcional, 'Estados Unidos', [super_heroi, rico, inventor, armadura, genio, masculino]).
+% Carrega a base de dados de personagens
+:- include('personagens.pl').
 
 % Predicado principal para iniciar o jogo
 startGame :-
@@ -60,14 +36,13 @@ iniciarJogo(Candidatos, Pergunta, MaxPerguntas) :-
         write('Vamos adicionar seu personagem à minha base de dados.'), nl,
         adicionarNovoPersonagem
     ;   melhorPergunta(Candidatos, MelhorAtributo),
-        format('Pergunta ~w: Seu personagem é ~w?~n', [Pergunta, MelhorAtributo]),
+        format('Pergunta ~w: Seu personagem ~w?~n', [Pergunta, MelhorAtributo]),
         lerResposta(Resposta),
         filtrarCandidatos(Candidatos, MelhorAtributo, Resposta, NovosCandidatos),
         ProximaPergunta is Pergunta + 1,
         iniciarJogo(NovosCandidatos, ProximaPergunta, MaxPerguntas)
     ).
 
-% Ler resposta do usuário
 lerResposta(Resposta) :-
     read(Input),
     (   Input = sim -> Resposta = sim
@@ -139,36 +114,9 @@ adicionarNovoPersonagem :-
     format('Personagem ~w adicionado com sucesso!~n', [Nome]),
     write('Obrigado por me ensinar algo novo!'), nl.
 
-% Predicados auxiliares para consultar a base de dados
-listarPersonagens :-
-    write('=== PERSONAGENS NA BASE DE DADOS ==='), nl,
-    personagem(Nome, Tipo, Local, Atributos),
-    format('Nome: ~w~n', [Nome]),
-    format('Tipo: ~w~n', [Tipo]),
-    format('Local: ~w~n', [Local]),
-    format('Atributos: ~w~n~n', [Atributos]),
-    fail.
-listarPersonagens.
-
-% Buscar personagem por atributo
-buscarPorAtributo(Atributo) :-
-    write('=== PERSONAGENS COM O ATRIBUTO: '), write(Atributo), write(' ==='), nl,
-    personagem(Nome, Tipo, Local, Atributos),
-    member(Atributo, Atributos),
-    format('~w (~w, ~w)~n', [Nome, Tipo, Local]),
-    fail.
-buscarPorAtributo(_).
-
-% Contar personagens
-contarPersonagens(Total) :-
-    findall(P, personagem(P, _, _, _), Personagens),
-    length(Personagens, Total).
-
-% Reiniciar jogo
 jogarNovamente :-
     startGame.
 
-% Instruções de uso
 instrucoes :-
     write('=== INSTRUÇÕES DO JOGO ==='), nl,
     write('1. Digite "startGame." para iniciar o jogo'), nl,
@@ -179,8 +127,10 @@ instrucoes :-
     % write('Outros comandos úteis:'), nl,
     % write('- listarPersonagens. (ver todos os personagens)'), nl,
     % write('- buscarPorAtributo(atributo). (buscar por atributo)'), nl,
+    % write('- buscarPorTipo(real). ou buscarPorTipo(ficcional). (buscar por tipo)'), nl,
+    % write('- buscarPorLocal(\'Inglaterra\'). (buscar por local - use aspas)'), nl,
     % write('- contarPersonagens(X). (contar personagens)'), nl,
-    % write('- instrucoes. (ver estas instruções)'), nl.
+    write('- instrucoes. (ver estas instruções)'), nl.
 
 % Mostrar instruções ao carregar
 :- instrucoes.
