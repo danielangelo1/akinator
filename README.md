@@ -22,6 +22,7 @@ Este é um jogo de adivinhação inspirado no famoso **Akinator**, onde o comput
 - 🎯 **Limite de Perguntas**: Máximo de 10 perguntas por partida
 - 🔍 **Consultas**: Ferramentas para explorar a base de dados
 - 💬 **Interface Amigável**: Respostas simples (sim/não/não sei)
+- 🏗️ **Arquitetura Modular**: Código organizado em módulos separados
 
 ## 🎮 Como Jogar
 
@@ -33,7 +34,7 @@ Este é um jogo de adivinhação inspirado no famoso **Akinator**, onde o comput
 ### 2. Execução
 
 ```prolog
-?- [akinator].        % Carrega o arquivo
+?- [akinator].        % Carrega o arquivo principal
 ?- startGame.         % Inicia o jogo
 ```
 
@@ -100,14 +101,16 @@ personagem('Harry Potter', ficcional, 'Inglaterra',
 
 ## 🛠️ Comandos Úteis
 
-| Comando                    | Descrição                      |
-| -------------------------- | ------------------------------ |
-| `startGame.`               | Inicia uma nova partida        |
-| `listarPersonagens.`       | Mostra todos os personagens    |
-| `buscarPorAtributo(mago).` | Busca personagens por atributo |
-| `contarPersonagens(X).`    | Conta total de personagens     |
-| `instrucoes.`              | Exibe instruções detalhadas    |
-| `halt.`                    | Sai do Prolog                  |
+| Comando                         | Descrição                               |
+| ------------------------------- | --------------------------------------- |
+| `startGame.`                    | Inicia uma nova partida                 |
+| `listarPersonagens.`            | Mostra todos os personagens             |
+| `buscarPorAtributo(mago).`      | Busca personagens por atributo          |
+| `buscarPorTipo(real).`          | Busca personagens reais ou ficcionais   |
+| `buscarPorLocal('Inglaterra').` | Busca personagens por local (use aspas) |
+| `contarPersonagens(X).`         | Conta total de personagens              |
+| `instrucoes.`                   | Exibe instruções detalhadas             |
+| `halt.`                         | Sai do Prolog                           |
 
 ## 🧠 Como Funciona a IA
 
@@ -130,11 +133,12 @@ calcularScore(Candidatos, Atributo, Score) :-
 
 ```
 linguaguens/
-├── akinator.pl          # Código principal do jogo
-└── README.md           # Este arquivo
+├── akinator.pl         # 🎮 Lógica principal do jogo
+├── personagens.pl      # 🗃️ Base de dados de personagens
+└── README.md          # 📖
 ```
 
-## 🚀 Possíveis Melhorias
+## 🚀 Futuras Melhorias
 
 - [ ] Interface gráfica com SWI-Prolog + HTML
 - [ ] Persistência de dados em arquivo
@@ -142,6 +146,7 @@ linguaguens/
 - [ ] Estatísticas de acertos
 - [ ] Mais personagens da cultura pop
 - [ ] Suporte a múltiplos idiomas
+- [ ] Sistema de categorias (filmes, livros, história, etc.)
 
 ## 🎓 Contexto Acadêmico
 
@@ -151,6 +156,7 @@ Este projeto foi desenvolvido como trabalho da disciplina de **Linguagens de Pro
 - Algoritmos de busca e inferência
 - Manipulação de bases de conhecimento
 - Interação com usuário em sistemas especialistas
+- Arquitetura modular em Prolog
 
 ## 👨‍💻 Autor
 
