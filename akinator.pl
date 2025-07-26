@@ -22,19 +22,29 @@ iniciarJogo(Candidatos, Pergunta, MaxPerguntas) :-
     (   NumCandidatos =< 0 ->
         write('Não consegui encontrar nenhum personagem! Vamos adicionar o seu.'), nl,
         adicionarNovoPersonagem
+    ;   Pergunta > MaxPerguntas ->
+        write('Atingi o limite de perguntas! Você venceu!'), nl,
+        (   NumCandidatos =:= 1 ->
+            Candidatos = [UltimoPersonagem],
+            format('Meu melhor palpite seria: ~w~n', [UltimoPersonagem]),
+            write('Mas vou adicionar seu personagem mesmo assim.'), nl
+        ;   write('Vamos adicionar seu personagem à minha base de dados.'), nl
+        ),
+        adicionarNovoPersonagem
     ;   NumCandidatos =:= 1 ->
         Candidatos = [Personagem],
         format('É o personagem ~w?~n', [Personagem]),
         lerResposta(Resposta),
         (   Resposta = sim ->
             write('Ótimo! Consegui adivinhar!'), nl
-        ;   write('Que estranho... Vamos adicionar seu personagem então.'), nl,
-            adicionarNovoPersonagem
+        ;   Resposta = nao ->
+            write('Interessante... Deixe-me fazer mais algumas perguntas.'), nl,
+            % Criar lista vazia para forçar o sistema a continuar explorando
+            iniciarJogo([], Pergunta, MaxPerguntas)
+        ;   % nao_sei - continue com o candidato
+            ProximaPergunta is Pergunta + 1,
+            iniciarJogo(Candidatos, ProximaPergunta, MaxPerguntas)
         )
-    ;   Pergunta > MaxPerguntas ->
-        write('Atingi o limite de perguntas! Você venceu!'), nl,
-        write('Vamos adicionar seu personagem à minha base de dados.'), nl,
-        adicionarNovoPersonagem
     ;   melhorPergunta(Candidatos, MelhorAtributo),
         format('Pergunta ~w: Seu personagem ~w?~n', [Pergunta, MelhorAtributo]),
         lerResposta(Resposta),
@@ -124,13 +134,16 @@ instrucoes :-
     write('3. Responda as perguntas com "sim.", "nao." ou "nao_sei."'), nl,
     write('4. O jogo tentará adivinhar em até 10 perguntas'), nl,
     write('5. Se não conseguir, você pode adicionar seu personagem'), nl, nl,
-    % write('Outros comandos úteis:'), nl,
-    % write('- listarPersonagens. (ver todos os personagens)'), nl,
-    % write('- buscarPorAtributo(atributo). (buscar por atributo)'), nl,
-    % write('- buscarPorTipo(real). ou buscarPorTipo(ficcional). (buscar por tipo)'), nl,
-    % write('- buscarPorLocal(\'Inglaterra\'). (buscar por local - use aspas)'), nl,
-    % write('- contarPersonagens(X). (contar personagens)'), nl,
-    write('- instrucoes. (ver estas instruções)'), nl.
+    write('- instrucoes. (ver estas instruções)'), nl,
+    write('- maisInstrucoes. (outros comandos auxiliares)'), nl,nl.
+
+maisInstrucoes :- 
+    write('Outros comandos úteis:'), nl,
+    write('- listarPersonagens. (ver todos os personagens)'), nl,
+    write('- buscarPorAtributo(atributo). (buscar por atributo)'), nl,
+    write('- buscarPorTipo(real). ou buscarPorTipo(ficcional). (buscar por tipo)'), nl,
+    write('- buscarPorLocal(\'Inglaterra\'). (buscar por local - use aspas)'), nl,
+    write('- contarPersonagens(X). (contar personagens)'), nl.
 
 % Mostrar instruções ao carregar
 :- instrucoes.
