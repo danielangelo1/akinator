@@ -12,7 +12,7 @@ personagem('Gandalf', ficcional, 'Terra Media', [mago, sabio, barba_branca, caja
 personagem('Sherlock Holmes', ficcional, 'Inglaterra', [detetive, inteligente, observador, fumante, adulto, masculino]).
 personagem('Wonder Woman', ficcional, 'Themyscira', [super_heroi, mulher, forte, imortal, guerreira, laco_da_verdade]).
 personagem('Batman', ficcional, 'Gotham City', [super_heroi, rico, vigilante, sem_poderes, adulto, masculino]).
-personagem('Spider-Man', ficcional, 'Nova York', [super_heroi, jovem, poderes_aranha, fotografo, masculino, responsavel]).
+personagem('Spider-Man', ficcional, 'Nova York', [super_heroi, adulto, poderes_aranha, fotografo, masculino, responsavel]).
 personagem('Katniss Everdeen', ficcional, 'Panem', [arqueira, corajosa, revolucionaria, jovem, feminino, sobrevivente]).
 personagem('Elsa', ficcional, 'Arendelle', [rainha, poderes_gelo, irma, jovem, feminino, magica]).
 personagem('Darth Vader', ficcional, 'Galaxia Star Wars', [sith, pai, respirador, espada_laser, vilao, masculino]).
