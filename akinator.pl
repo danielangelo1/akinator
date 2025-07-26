@@ -3,147 +3,81 @@
 % =====================================
 % AUTOR: Daniel Angelo Rosa Morais 21.1.8128
 
-% Carrega a base de dados de personagens
+% Carrega todos os módulos
 :- include('personagens.pl').
+:- include('ia.pl').
+:- include('io.pl').
 
 % Predicado principal para iniciar o jogo
 startGame :-
-    write('=== JOGO DE ADIVINHAÇÃO DE PERSONAGENS ==='), nl,
-    write('Pense em um personagem e eu tentarei adivinhar!'), nl,
-    write('Responda com "sim", "nao" ou "nao_sei".'), nl, nl,
+    exibirCabecalho,
     findall(P, personagem(P, _, _, _), TodosPersonagens),
     length(TodosPersonagens, Total),
-    format('Tenho ~w personagens na minha base de dados.~n~n', [Total]),
+    exibirEstatisticas(Total),
     iniciarJogo(TodosPersonagens, 1, 10).
 
-% Iniciar o jogo com lista de personagens candidatos
+% Coordenar o fluxo principal do jogo
 iniciarJogo(Candidatos, Pergunta, MaxPerguntas) :-
-    length(Candidatos, NumCandidatos),
-    (   NumCandidatos =< 0 ->
-        write('Não consegui encontrar nenhum personagem! Vamos adicionar o seu.'), nl,
-        adicionarNovoPersonagem
-    ;   Pergunta > MaxPerguntas ->
-        write('Atingi o limite de perguntas! Você venceu!'), nl,
-        (   NumCandidatos =:= 1 ->
-            Candidatos = [UltimoPersonagem],
-            format('Meu melhor palpite seria: ~w~n', [UltimoPersonagem]),
-            write('Mas vou adicionar seu personagem mesmo assim.'), nl
-        ;   write('Vamos adicionar seu personagem à minha base de dados.'), nl
-        ),
-        adicionarNovoPersonagem
-    ;   NumCandidatos =:= 1 ->
-        Candidatos = [Personagem],
-        format('É o personagem ~w?~n', [Personagem]),
-        lerResposta(Resposta),
-        (   Resposta = sim ->
-            write('Ótimo! Consegui adivinhar!'), nl
-        ;   Resposta = nao ->
-            write('Interessante... Deixe-me fazer mais algumas perguntas.'), nl,
-            % Criar lista vazia para forçar o sistema a continuar explorando
-            iniciarJogo([], Pergunta, MaxPerguntas)
-        ;   % nao_sei - continue com o candidato
-            ProximaPergunta is Pergunta + 1,
-            iniciarJogo(Candidatos, ProximaPergunta, MaxPerguntas)
-        )
-    ;   melhorPergunta(Candidatos, MelhorAtributo),
-        format('Pergunta ~w: Seu personagem ~w?~n', [Pergunta, MelhorAtributo]),
-        lerResposta(Resposta),
-        filtrarCandidatos(Candidatos, MelhorAtributo, Resposta, NovosCandidatos),
-        ProximaPergunta is Pergunta + 1,
-        iniciarJogo(NovosCandidatos, ProximaPergunta, MaxPerguntas)
+    (   semCandidatos(Candidatos) ->
+        tratarSemCandidatos
+    ;   atingiuLimite(Pergunta, MaxPerguntas) ->
+        tratarLimiteAtingido(Candidatos)
+    ;   deveTentarAdivinhar(Candidatos) ->
+        tratarTentativaAdivinhacao(Candidatos, Pergunta, MaxPerguntas)
+    ;   continuarPerguntando(Candidatos, Pergunta, MaxPerguntas)
     ).
 
-lerResposta(Resposta) :-
-    read(Input),
-    (   Input = sim -> Resposta = sim
-    ;   Input = nao -> Resposta = nao
-    ;   Input = nao_sei -> Resposta = nao_sei
-    ;   write('Responda apenas "sim", "nao" ou "nao_sei". Tente novamente: '),
-        lerResposta(Resposta)
-    ).
+tratarSemCandidatos :-
+    mensagemNenhumPersonagem,
+    adicionarNovoPersonagem.
 
-% Encontrar a melhor pergunta (atributo que melhor divide os candidatos)
-melhorPergunta(Candidatos, MelhorAtributo) :-
-    findall(Atributo, (
-        member(Personagem, Candidatos),
-        personagem(Personagem, _, _, Atributos),
-        member(Atributo, Atributos)
-    ), TodosAtributos),
-    list_to_set(TodosAtributos, AtributosUnicos),
-    findall(Score-Atributo, (
-        member(Atributo, AtributosUnicos),
-        calcularScore(Candidatos, Atributo, Score)
-    ), Scores),
-    sort(Scores, ScoresOrdenados),
-    reverse(ScoresOrdenados, [_-MelhorAtributo|_]).
+tratarLimiteAtingido(Candidatos) :-
+    mensagemDerrota,
+    (   deveTentarAdivinhar(Candidatos) ->
+        Candidatos = [UltimoPersonagem],
+        mensagemPalpiteFinal(UltimoPersonagem)
+    ;   mensagemAdicionarPersonagem
+    ),
+    adicionarNovoPersonagem.
 
-% Calcular score de um atributo (quão bem ele divide os candidatos)
-calcularScore(Candidatos, Atributo, Score) :-
-    length(Candidatos, Total),
-    findall(P, (
-        member(P, Candidatos),
-        personagem(P, _, _, Atributos),
-        member(Atributo, Atributos)
-    ), ComAtributo),
-    length(ComAtributo, NumCom),
-    NumSem is Total - NumCom,
-    (   NumCom =:= 0 ; NumSem =:= 0 ->
-        Score = 0
-    ;   Score is min(NumCom, NumSem)
-    ).
+tratarTentativaAdivinhacao(Candidatos, Pergunta, MaxPerguntas) :-
+    Candidatos = [Personagem],
+    exibirTentativaAdivinhacao(Personagem),
+    lerResposta(Resposta),
+    processarRespostaAdivinhacao(Resposta, Pergunta, MaxPerguntas).
 
-% Filtrar candidatos baseado na resposta
-filtrarCandidatos(Candidatos, Atributo, sim, NovosCandidatos) :-
-    findall(P, (
-        member(P, Candidatos),
-        personagem(P, _, _, Atributos),
-        member(Atributo, Atributos)
-    ), NovosCandidatos).
+processarRespostaAdivinhacao(sim, _, _) :-
+    mensagemVitoria.
 
-filtrarCandidatos(Candidatos, Atributo, nao, NovosCandidatos) :-
-    findall(P, (
-        member(P, Candidatos),
-        personagem(P, _, _, Atributos),
-        \+ member(Atributo, Atributos)
-    ), NovosCandidatos).
+processarRespostaAdivinhacao(nao, Pergunta, MaxPerguntas) :-
+    mensagemContinuarExplorando,
+    iniciarJogo([], Pergunta, MaxPerguntas).
 
-filtrarCandidatos(Candidatos, _, nao_sei, Candidatos).
+processarRespostaAdivinhacao(nao_sei, Pergunta, MaxPerguntas) :-
+    ProximaPergunta is Pergunta + 1,
+    iniciarJogo([], ProximaPergunta, MaxPerguntas).
 
-% Adicionar novo personagem à base de dados
+continuarPerguntando(Candidatos, Pergunta, MaxPerguntas) :-
+    melhorPergunta(Candidatos, MelhorAtributo),
+    exibirPergunta(Pergunta, MelhorAtributo),
+    lerResposta(Resposta),
+    filtrarCandidatos(Candidatos, MelhorAtributo, Resposta, NovosCandidatos),
+    ProximaPergunta is Pergunta + 1,
+    iniciarJogo(NovosCandidatos, ProximaPergunta, MaxPerguntas).
+
 adicionarNovoPersonagem :-
-    write('Qual é o nome do personagem? '),
-    read(Nome),
-    write('É um personagem real ou ficcional? (real/ficcional) '),
-    read(Tipo),
-    write('Qual é o local de origem? '),
-    read(Local),
-    write('Digite os atributos separados por vírgula (ex: [jovem, corajoso, mago]): '),
-    read(Atributos),
+    coletarDadosNovoPersonagem(Nome, Tipo, Local, Atributos),
+    criarEAdicionarPersonagem(Nome, Tipo, Local, Atributos),
+    mensagemPersonagemAdicionado(Nome).
+
+criarEAdicionarPersonagem(Nome, Tipo, Local, Atributos) :-
     NovoPersonagem =.. [personagem, Nome, Tipo, Local, Atributos],
-    assertz(NovoPersonagem),
-    format('Personagem ~w adicionado com sucesso!~n', [Nome]),
-    write('Obrigado por me ensinar algo novo!'), nl.
+    assertz(NovoPersonagem).
 
-jogarNovamente :-
-    startGame.
-
-instrucoes :-
-    write('=== INSTRUÇÕES DO JOGO ==='), nl,
-    write('1. Digite "startGame." para iniciar o jogo'), nl,
-    write('2. Pense em um personagem'), nl,
-    write('3. Responda as perguntas com "sim.", "nao." ou "nao_sei."'), nl,
-    write('4. O jogo tentará adivinhar em até 10 perguntas'), nl,
-    write('5. Se não conseguir, você pode adicionar seu personagem'), nl, nl,
-    write('- instrucoes. (ver estas instruções)'), nl,
-    write('- maisInstrucoes. (outros comandos auxiliares)'), nl,nl.
-
-maisInstrucoes :- 
-    write('Outros comandos úteis:'), nl,
-    write('- listarPersonagens. (ver todos os personagens)'), nl,
-    write('- buscarPorAtributo(atributo). (buscar por atributo)'), nl,
-    write('- buscarPorTipo(real). ou buscarPorTipo(ficcional). (buscar por tipo)'), nl,
-    write('- buscarPorLocal(\'Inglaterra\'). (buscar por local - use aspas)'), nl,
-    write('- contarPersonagens(X). (contar personagens)'), nl.
+% Atalhos para comandos
+jogarNovamente :- startGame.
+instrucoes :- exibirInstrucoes.
+maisInstrucoes :- exibirMaisInstrucoes.
 
 % Mostrar instruções ao carregar
-:- instrucoes.
+:- exibirInstrucoes.
