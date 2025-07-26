@@ -158,7 +158,7 @@ Este projeto foi desenvolvido como trabalho da disciplina de **Linguagens de Pro
 
 **Daniel Angelo**
 
-- GitHub: [@danielangelo](https://github.com/danielangelo)
+- GitHub: [@danielangelo](https://github.com/danielangelo1)
 - Universidade: UFOP - Universidade Federal de Ouro Preto
 
 ---
