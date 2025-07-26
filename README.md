@@ -132,13 +132,15 @@ calcularScore(Candidatos, Atributo, Score) :-
 ## 📁 Estrutura do Projeto
 
 ```
-linguaguens/
-├── akinator.pl         # 🎮 Lógica principal do jogo
+akinator/
+├── akinator.pl         # 🎮 Controlador principal e coordenação
 ├── personagens.pl      # 🗃️ Base de dados de personagens
-└── README.md          # 📖
+├── ia.pl              # 🧠 Algoritmos de IA e busca
+├── io.pl              # 💬 Interface e interação com usuário
+└── README.md          # 📖 Este arquivo
 ```
 
-## 🚀 Futuras Melhorias
+## 🚀 Possíveis Melhorias
 
 - [ ] Interface gráfica com SWI-Prolog + HTML
 - [ ] Persistência de dados em arquivo
@@ -150,13 +152,7 @@ linguaguens/
 
 ## 🎓 Contexto Acadêmico
 
-Este projeto foi desenvolvido como trabalho da disciplina de **Linguagens de Programação** da **UFOP** (Universidade Federal de Ouro Preto), focando em:
-
-- Programação em lógica com Prolog
-- Algoritmos de busca e inferência
-- Manipulação de bases de conhecimento
-- Interação com usuário em sistemas especialistas
-- Arquitetura modular em Prolog
+Este projeto foi desenvolvido como trabalho da disciplina de **Linguagens de Programação** da **UFOP** (Universidade Federal de Ouro Preto)
 
 ## 👨‍💻 Autor
 
