@@ -72,7 +72,13 @@ adicionarNovoPersonagem :-
 
 criarEAdicionarPersonagem(Nome, Tipo, Local, Atributos) :-
     NovoPersonagem =.. [personagem, Nome, Tipo, Local, Atributos],
-    assertz(NovoPersonagem).
+    assertz(NovoPersonagem),
+    salvarPersonagemNoArquivo(Nome, Tipo, Local, Atributos).
+
+salvarPersonagemNoArquivo(Nome, Tipo, Local, Atributos) :-
+    open('personagens.pl', append, Stream),
+    format(Stream, '~npersonagem(~q, ~q, ~q, ~q).~n', [Nome, Tipo, Local, Atributos]),
+    close(Stream).
 
 % Atalhos para comandos
 jogarNovamente :- startGame.

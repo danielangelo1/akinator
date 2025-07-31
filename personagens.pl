@@ -3,6 +3,8 @@
 % =====================================
 % Autor: Daniel Angelo Rosa Morais 21.1.8128
 
+:- dynamic personagem/4.
+
 % Formato: personagem(Nome, TipoRealidade, LocalOrigem, [ListaAtributos])
 
 % PERSONAGENS FICCIONAIS
