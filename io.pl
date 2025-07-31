@@ -45,15 +45,54 @@ mensagemNenhumPersonagem :-
 mensagemAdicionarPersonagem :-
     write('Vamos adicionar seu personagem à minha base de dados.'), nl.
 
+% Coletar dados do novo personagem
 coletarDadosNovoPersonagem(Nome, Tipo, Local, Atributos) :-
+    coletarNome(Nome),
+    coletarTipo(Tipo),
+    coletarLocal(Local),
+    coletarAtributos(Atributos).
+
+% Coletar nome do personagem
+coletarNome(Nome) :-
     write('Qual é o nome do personagem? '),
-    read(Nome),
+    flush_output,
+    get_char(_),  % Consome qualquer caractere pendente
+    read_line_to_string(user_input, NomeStr),
+    atom_string(Nome, NomeStr).
+
+% Coletar tipo do personagem
+coletarTipo(Tipo) :-
+    nl,
     write('É um personagem real ou ficcional? (real/ficcional) '),
-    read(Tipo),
+    flush_output,
+    read_line_to_string(user_input, TipoStr),
+    atom_string(Tipo, TipoStr).
+
+% Coletar local de origem
+coletarLocal(Local) :-
+    nl,
     write('Qual é o local de origem? '),
-    read(Local),
-    write('Digite os atributos separados por vírgula (ex: [jovem, corajoso, mago]): '),
-    read(Atributos).
+    flush_output,
+    read_line_to_string(user_input, LocalStr),
+    atom_string(Local, LocalStr).
+
+% Coletar atributos
+coletarAtributos(Atributos) :-
+    nl,
+    write('Digite os atributos separados por vírgula (ex: jovem,corajoso,mago): '),
+    flush_output,
+    read_line_to_string(user_input, AtributosStr),
+    processar_atributos(AtributosStr, Atributos).
+
+% Processar string de atributos em lista
+processar_atributos(AtributosStr, Atributos) :-
+    split_string(AtributosStr, ',', ' ', AtributosStrList),
+    maplist(string_to_atom, AtributosStrList, Atributos).
+
+% Converter string para atom removendo espaços
+string_to_atom(Str, Atom) :-
+    string_concat(Str, '', StrClean),
+    atom_string(Atom, StrClean).
 
 mensagemPersonagemAdicionado(Nome) :-
     format('Personagem ~w adicionado com sucesso!~n', [Nome]),
